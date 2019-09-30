@@ -9,7 +9,7 @@ set -o pipefail
 
 # Set Variables
 #This is the chart version of all NRO envs migrated to the new CloudSQL proxy
-CHART_VERSION=0.8.9
+CHART_VERSION=0.8.5
 SITE_ENV=$1
 
 if [ -z "$1" ]
