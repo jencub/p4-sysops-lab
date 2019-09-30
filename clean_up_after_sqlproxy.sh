@@ -32,11 +32,12 @@ if SITE_ENV="develop"
     GOOGLE_PROJECT_ID="planet4-production"
     RELEASE="-master"
     kubectx gke_"$GOOGLE_PROJECT_ID"_us-central1-a_planet4-production
-  mkdir -p /tmp/$SITE_ENV
-  cd /tmp/$SITE_ENV  || exit
 fi
 
 # Find out if anything needs to be cleaned up
+
+echo $SITE_ENV
+mkdir -p /tmp/cleanup/$SITE_ENV
 
 DEPLOYMENT_COUNT=$(helm ls | grep planet4 | grep -c wordpress-$CHART_VERSION)
 echo "$DEPLOYMENT_COUNT"
@@ -59,11 +60,12 @@ then
            --member user:$IAM_NAME@$GOOGLE_PROJECT_ID.iam.gserviceaccount.com /
            --role roles/cloudsql.client"
 
-#commenting this out for testing... probs some way to run this without doing it ...
+#commenting this out for testing... probs some way to run this without doing it
+# and want to add piping this out to a log file in the tmp dir i created /tmp/$SITE_ENV
        # gcloud projects remove-iam-policy-binding my-project \
        #  --member user:$IAM_NAME@planet-4-151612.iam.gserviceaccount.com \
        #  --role roles/cloudsql.client
-       # >> /tmp/$SITE_ENV/iam_name_roles_removed
+       # >> /tmp/cleanup/$SITE_ENV/iam_name_roles_removed
 
      done < iam_name_list
       rm iam_name_list
@@ -85,6 +87,7 @@ helm ls | grep planet4 | grep wordpress-$CHART_VERSION | cut -d' ' -f1 >> nro_en
       echo "kubectl delete PodDisruptionBudget $DEPLOYMENT_NAME$RELEASE-gcloud-sqlproxy"
 
 #commenting this out for testing... probs some way to run this without doing it ...
+# and want to add piping this out to a log file in the tmp dir i created /tmp/$SITE_ENV
 
       # kubectl delete networkpolicy $DEPLOYMENT_NAME$RELEASE-gcloud-sqlproxy
       # kubectl delete secret $DEPLOYMENT_NAME$RELEASE-gcloud-sqlproxy
